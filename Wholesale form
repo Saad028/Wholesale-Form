@@ -1,0 +1,109 @@
+<!-- Button trigger modal -->
+{%- if product.available -%}
+   <button type="button" class="modal_btn" data-toggle="modal" data-target="#exampleModalLong"> WHOLESALE </button>
+  {%- render 'wholesale-shop-modal', product: product -%}
+  {% endif %}
+
+<!-- Modal -->
+<div class="check modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      
+       {%- assign form_id = 'contact-' | append: product.id -%}
+         <form id="contact-{{ product.id  }}" class="wholeSaleForm" data-id="{{ product.id  }}">
+    <button type="button" class="close close_modal">
+          <span aria-hidden="true" class="closebtn">&times;</span>
+        </button>
+       
+      <div class="modal-body">
+        <h5 class="modal-title" id="exampleModalLongTitle-{{ product.id }}" > {{ product.title }} </h5>   
+           <div class="grid__item medium-up--one-half"> 
+                  <input placeholder="Enter name" required type="text" id="ContactName-{{ product.id }}" class="input-full" name="customer_name" autocapitalize="words" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}">
+                  <input placeholder="Enter email" required type="email" id="ContactEmail-{{ product.id }}" class="input-full" autocorrect="off" autocapitalize="off" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}">              
+           </div>
+        <div class="grid__item medium-up--one-half itemWrap">
+                <input placeholder="Phone number" required type="text" class="input-full" id="ContactColor-{{ product.id }}" name="Phone" autocorrect="off" autocapitalize="off" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}">
+                
+                {%if product.variants.size >= 1 %}
+                  {% for option in product.options_with_values %}
+                      {% if option.name == "Color" %}
+                    <div class="options color">
+                      <select class="product-variants.option {{ option.name | handleize }} option-{{option.position}}" data-url="{{ product.url }}" id="ContactFormColor-{{ product.id }}" name="product_color">
+                        {% for value in option.values %}
+                          <option {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                      {% endif %}
+                  {% endfor %}
+                {% endif %}
+
+           {%if product.variants.size >= 1 %}
+                  {% for option in product.options_with_values %}
+                      {% if option.name == "Initials" %}
+                    <div class="options size">
+                      <select class="product-variants.option {{ option.name | handleize }} option-{{option.position}}" data-url="{{ product.url }}" id="ContactFormColor-{{ product.id }}" name="product_color">
+                        {% for value in option.values %}
+                          <option {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                      {% endif %}
+                  {% endfor %}
+                {% endif %}
+
+           {%if product.variants.size >= 1 %}
+              {% for option in product.options_with_values %}
+                  {% if option.name == "Size" %}
+                <div class="options size">
+                  <select class="product-variants.option {{ option.name | handleize }} option-{{option.position}}" data-url="{{ product.url }}" id="ContactFormColor-{{ product.id }}" name="product_color">
+                    {% for value in option.values %}
+                      <option {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                  {% endif %}
+              {% endfor %}
+            {% endif %}
+          <input type="number" id="ContactFormQty-{{value}}-{{ product.id }}" name="{{ value }}" value="0" required min="0"/>
+                
+         </div>
+
+   
+      <div class="grid__item medium-up--one-half">
+         <textarea rows="4" placeholder="Message" id="ContactFormMessage-{{ product.id }}" class="input-full" name="customer_query">{% if form.body %}{{ form.body }}{% endif %}</textarea>
+        </div>
+       <div class="grid__item medium-up--one-half">
+         <button type="submit" class="btn" id="ContactFormSubmit" >
+           <i class="fa fa-spinner fa-spin hide"></i> Order Now
+         </button>
+     </div>
+      </div>
+        
+            
+      </div>
+
+    </div>
+  </div>
+ 
+<div class="modal-backdrop fade"></div>
+           </form>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+  jQuery(document).ready(function(){
+    jQuery(".modal_btn").click(function(){
+      jQuery(".check").addClass('show');
+      jQuery(".modal-backdrop").addClass('show');
+                                          
+      jQuery("body").addClass('modal-open');
+      
+    });
+    jQuery(".close").click(function(){
+      jQuery(".check").removeClass('show');
+      jQuery(".modal-backdrop").removeClass('show');
+      jQuery("body").removeClass('modal-open');
+      
+    });
+  });
+</script>
+<!-- MOdal End -->
