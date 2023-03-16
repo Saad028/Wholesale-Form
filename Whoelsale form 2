@@ -1,0 +1,152 @@
+/*******************************/********************/**************/
+
+<div class="modal-cus"  id="modalToggle-{{ product.id }}">
+    <div class="modal-wrapper modal-transition">
+       
+  
+      {%- assign form_id = 'contact-' | append: product.id -%}
+
+         <form id="contact-{{ product.id  }}" class="wholeSaleForm" data-id="{{ product.id  }}">
+          <div class="WhlsleFormHead"> 
+            <input required type="text" readonly id="ContactFormTittle-{{ product.id }}" class="hide" name="product_name" value="{{ product.title }}">  
+            <h2 class="WholesaleFormHeading" id="ContactFormProductName-{{ product.id }}" > {{ product.title }} </h2> 
+          <button type="button" class="modal_close_cus">
+          <svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-close" viewBox="0 0 64 64"><path d="M19 17.61l27.12 27.13m0-27.12L19 44.74"/></svg>
+          </button>
+          </div>
+
+        <div class="modal-body wholeSaleFormCus">
+       
+            <div class="grid__item medium-up--one-half"> 
+              <input placeholder="Enter name" required type="text" id="ContactName-{{ product.id }}" class="input-full" name="customer_name" autocapitalize="words" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}">
+              <input placeholder="Enter email" required type="email" id="ContactEmail-{{ product.id }}" class="input-full" autocorrect="off" autocapitalize="off" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}">              
+            </div>
+        
+            <div class="grid__item medium-up--one-half">
+                <input placeholder="Phone number" required type="text" class="input-full" id="ContactColor-{{ product.id }}" name="Phone" autocorrect="off" autocapitalize="off" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}">
+                
+                {%if product.variants.size > 1 %}
+                  {% for option in product.options_with_values %}
+                      {% if option.name == "Color" %}
+                    <div class="options color">
+                      <select class="product-variants.option {{ option.name | handleize }} option-{{option.position}}" data-url="{{ product.url }}" id="ContactFormColor-{{ product.id }}" name="product_color">
+                        {% for value in option.values %}
+                          <option {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                      {% endif %}
+                  {% endfor %}
+                {% endif %}
+            </div>
+
+       <div class="grid__item medium-up--one-half p-0">
+          {%if product.variants.size > 1 %}
+                    {% for option in product.options_with_values %}
+                      {% if option.name == "Size" %}
+                    <div class="options size">
+                     {% for value in option.values %}
+                       <div class="row">
+                            <div class="col-md-5">
+                              <label class="product-variants.option {{ option.name | handleize }} option-{{option.position}}" data-url="{{ product.url }}" id="ContactFormSize-{{ product.id }}" name="product_size">{{ value }}</label>
+                            </div>
+                          <div class="col-md-5"><input type="number" id="ContactFormQty-{{value}}-{{ product.id }}" name="{{ value }}" value="0" required min="0"/></div>
+                        </div>
+                      {% endfor %}
+                      </div>
+                        {% endif %}
+                    {% endfor %}
+                  {% endif %}
+        </div>
+  
+        
+            <div class="grid__item medium-up--one-half">
+               <textarea rows="4" placeholder="Message" id="ContactFormMessage-{{ product.id }}" class="input-full" name="customer_query">{% if form.body %}{{ form.body }}{% endif %}</textarea>
+            </div>
+           <div class="grid__item medium-up--one-half">
+               <button type="submit" class="btn" id="ContactFormSubmit" >
+                 <i class="fa fa-spinner fa-spin hide"></i> Order Now
+               </button>
+           </div>
+
+      </div>
+        </form>
+     
+    </div>
+  </div>    
+/******************************/*********************/**************/
+
+
+/********************************/*********************/************/
+<!-- dont delete this code -->
+
+<div class="formSubmitMessage hide" style="text-align:center;">
+  <button type="button" class="modal_close_btn">
+    <svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-close" viewBox="0 0 64 64"><path d="M19 17.61l27.12 27.13m0-27.12L19 44.74"/></svg>
+  </button>
+  <div class="innerSubMess"> 
+    <h2><strong>Thank You!</strong></h2>
+    <p> Your form was successfully submitted. </p>
+  </div>
+</div> 
+    
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+jQuery(document).ready(function(){
+   jQuery("#MainContent").on("click",".wholesale-product__btn",function(){
+      jQuery("body").addClass("classopen");
+    });
+
+  jQuery("#MainContent").on("click",".modal_close_cus",function(){
+     // jQuery("body").removeClass("classopen");
+    
+      setTimeout(function() {
+        jQuery('body').removeClass('classopen');
+      }, 300);
+    });
+  
+    
+      $(".modal_close_btn").on("click",function(){
+         $(".formSubmitMessage").addClass("hide")
+         $('body').removeClass('classopen');
+        // $(localStorage.activeClass).addClass("is-visible")
+      });  
+}); 
+</script>
+
+<script>
+   $(".wholeSaleForm").submit(function( event ) {
+     event.stopPropagation();
+     event.preventDefault();
+     let id = $(this).attr('data-id');
+     let data = $(this).serializeArray();
+       $.ajax({
+          type:'post',
+          url : "https://sandbox5.cubix.co/markhor/email/markhor-smtp/Email.php",
+          data:{
+              from:'support@markhorwear.com',
+              to: $("#ContactEmail-"+id).val(),
+              name: $("#ContactName-"+id).val(),
+              subject:'Wholesale Order',
+              message:data
+          },
+         beforeSend:function(){
+           $('.fa-spin').removeClass("hide")
+         },
+         success: function(){
+            $("#modalToggle-"+id).removeClass("is-visible");
+             $(".formSubmitMessage").removeClass("hide")
+            $('.fa-spin').addClass("hide")
+           $(".wholeSaleForm").trigger('reset')
+             localStorage.activeClass = "#modalToggle-"+id;
+         },
+      })
+      event.preventDefault();
+  });
+</script>
+<!-- dont delete this code -->
+     
+  
+ </div>
+
+/********************************/******************************/****/
