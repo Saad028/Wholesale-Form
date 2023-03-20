@@ -122,9 +122,9 @@ jQuery(document).ready(function(){
      let data = $(this).serializeArray();
        $.ajax({
           type:'post',
-          url : "https://sandbox5.cubix.co/markhor/email/markhor-smtp/Email.php",
+          url : "https://sandbox5.example.co/example/email/example-smtp/Email.php",
           data:{
-              from:'support@markhorwear.com',
+              from:'support@example.com',
               to: $("#ContactEmail-"+id).val(),
               name: $("#ContactName-"+id).val(),
               subject:'Wholesale Order',
